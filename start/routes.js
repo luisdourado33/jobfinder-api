@@ -20,6 +20,7 @@ Route.get("/", () => {
   return { greeting: "Hello world in JSON" };
 });
 
+Route.resource("/users", "UserController");
 Route.resource("/roles", "RoleController");
 Route.resource("/companies", "CompanyTypeController");
 
