@@ -88,6 +88,23 @@ class UserController {
     await user.delete();
     return { msg: `Usuário ${params.id} removido com sucesso` };
   }
+
+  /**
+   * Sign in to account through email and password.
+   * POST login/{form.body}
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async login({ params, request, response, auth }) {
+    const { email, password } = request.all();
+
+    let token = await auth.attempt(email, password);
+    let user = await User.query().where("email", email).fetch();
+
+    return { user, token };
+  }
 }
 
 module.exports = UserController;

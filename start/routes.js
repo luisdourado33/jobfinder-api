@@ -20,8 +20,10 @@ Route.get("/", () => {
   return { greeting: "Hello world in JSON" };
 });
 
+Route.post("/login", "UserController.login");
 Route.resource("/users", "UserController");
 Route.resource("/roles", "RoleController");
+Route.resource("/jobs", "JobController");
 Route.resource("/companies", "CompanyTypeController");
 
 // Rotas agrupadas no middleware de autenticação

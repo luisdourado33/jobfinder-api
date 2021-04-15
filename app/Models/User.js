@@ -38,6 +38,10 @@ class User extends Model {
   roles() {
     return this.belongsTo("App/Models/Role");
   }
+
+  jobs() {
+    return this.hasMany("App/Models/Job");
+  }
 }
 
 module.exports = User;

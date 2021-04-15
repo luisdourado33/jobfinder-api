@@ -1,5 +1,8 @@
 "use strict";
 
+const { get } = require("@adonisjs/framework/src/Route/Manager");
+
+const Database = use("Database");
 const Role = use("App/Models/Role");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
@@ -20,7 +23,7 @@ class RoleController {
    * @param {View} ctx.view
    */
   async index({ request, response, view }) {
-    const roles = await Role.all();
+    const roles = await Database.table("roles").orderBy("name", "asc");
 
     return roles;
   }

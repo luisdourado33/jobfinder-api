@@ -1,4 +1,8 @@
-'use strict'
+"use strict";
+
+const Database = use("Database");
+const Job = use("App/Models/Job");
+const User = use("App/Models/User");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -17,19 +21,9 @@ class JobController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new job.
-   * GET jobs/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index({ request, response, view }) {
+    const jobs = await Job.query().with("user").fetch();
+    return jobs;
   }
 
   /**
@@ -40,7 +34,29 @@ class JobController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
+    const data = request.only([
+      "user_id",
+      "title",
+      "description",
+      "period",
+      "location",
+    ]);
+
+    let ownerId = request.only(["user_id"]);
+
+    const job = await Job.create(data);
+    async function incrementJobOwner() {
+      await Database.table("users")
+        .where("id", ownerId)
+        .increment("jobsCreated", 1);
+    }
+
+    // ARRUMAR!!!
+
+    incrementJobOwner();
+
+    return job;
   }
 
   /**
@@ -52,19 +68,9 @@ class JobController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing job.
-   * GET jobs/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
+    let job = await Job.find(params.id);
+    return job;
   }
 
   /**
@@ -75,8 +81,7 @@ class JobController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
   /**
    * Delete a job with id.
@@ -86,8 +91,12 @@ class JobController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, request, response }) {
+    let job = await Job.find(params.id);
+
+    await job.delete();
+    return { msg: `Vaga ${params.id} removida com sucesso` };
   }
 }
 
-module.exports = JobController
+module.exports = JobController;
