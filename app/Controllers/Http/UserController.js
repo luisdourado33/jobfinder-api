@@ -60,7 +60,7 @@ class UserController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    let user = await User.find(params.id);
+    let user = await User.query().where("id", params.id).with("roles").fetch();
     return user;
   }
 
