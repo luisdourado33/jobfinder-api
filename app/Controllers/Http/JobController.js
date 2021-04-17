@@ -22,7 +22,10 @@ class JobController {
    * @param {View} ctx.view
    */
   async index({ request, response, view }) {
-    const jobs = await Job.query().with("user").fetch();
+    const jobs = await Job.query()
+      .with("user")
+      .orderBy("created_at", "desc")
+      .fetch();
     return jobs;
   }
 
@@ -69,7 +72,7 @@ class JobController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    let job = await Job.find(params.id);
+    const job = await Job.query().with("user").where("id", params.id).fetch();
     return job;
   }
 
