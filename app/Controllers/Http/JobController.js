@@ -2,6 +2,7 @@
 
 const Database = use("Database");
 const Job = use("App/Models/Job");
+const JobApply = use("App/Models/JobApply");
 const User = use("App/Models/User");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
@@ -37,7 +38,10 @@ class JobController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
+
   async store({ request, response }) {
+    let { user_id } = request.all();
+
     const data = request.only([
       "user_id",
       "title",
@@ -46,16 +50,13 @@ class JobController {
       "location",
     ]);
 
-    let ownerId = request.only(["user_id"]);
-
     const job = await Job.create(data);
+
     async function incrementJobOwner() {
       await Database.table("users")
-        .where("id", ownerId)
+        .where("id", user_id)
         .increment("jobsCreated", 1);
     }
-
-    // ARRUMAR!!!
 
     incrementJobOwner();
 
@@ -99,6 +100,18 @@ class JobController {
 
     await job.delete();
     return { msg: `Vaga ${params.id} removida com sucesso` };
+  }
+
+  async getUserJobs({ params, request, response, auth }) {
+    const { userId } = request.all();
+
+    const userJobs = await Job.query()
+      .with("user")
+      .where("user_id", userId)
+      .orderBy("created_at", "desc")
+      .fetch();
+
+    return userJobs;
   }
 }
 

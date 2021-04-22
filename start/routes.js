@@ -24,6 +24,8 @@ Route.post("/login", "UserController.login");
 Route.resource("/users", "UserController");
 Route.resource("/roles", "RoleController");
 Route.resource("/jobs", "JobController");
+Route.post("/jobs/userJobs", "JobController.getUserJobs");
+Route.resource("/jobs/jobApply", "JobApplyController");
 Route.resource("/companies", "CompanyTypeController");
 
 // Rotas agrupadas no middleware de autenticação
