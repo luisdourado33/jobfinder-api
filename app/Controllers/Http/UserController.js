@@ -1,5 +1,6 @@
 "use strict";
-
+const Drive = use("Drive");
+const Helpers = use("Helpers");
 const User = use("App/Models/User");
 const Role = use("App/Models/Role");
 
@@ -21,8 +22,7 @@ class UserController {
    * @param {View} ctx.view
    */
   async index({ request, response, view }) {
-    const users = await User.all();
-
+    let users = await User.query().with("roles").fetch();
     return users;
   }
 
@@ -104,6 +104,42 @@ class UserController {
     let user = await User.query().where("email", email).fetch();
 
     return { user, token };
+  }
+
+  async upload({ params, request }) {
+    const user_id = params.user_id;
+    const curriculum = request.file("curriculum", {
+      types: ["document", "pdf", "image"],
+      size: "10mb",
+    });
+
+    await curriculum.move(Helpers.tmpPath("uploads"), {
+      name: `curriculo_user_${user_id}.pdf`,
+      overwrite: true,
+    });
+
+    if (!curriculum.moved()) {
+      return curriculum.error();
+    }
+
+    return {
+      status: true,
+      msg: `Currículo do usuário ${user_id} atualizado com sucesso`,
+    };
+  }
+
+  async download({ params, request, response }) {
+    const user_id = params.user_id;
+
+    if (await Drive.exists(`uploads/curriculo_user_${user_id}.pdf`)) {
+      response.header("Content-type", "application/pdf");
+      return await Drive.get(`uploads/curriculo_user_${user_id}.pdf`);
+    } else {
+      return {
+        status: false,
+        msg: "Não foi encontrado nenhuma ocorrência para este identificador.",
+      };
+    }
   }
 }
 

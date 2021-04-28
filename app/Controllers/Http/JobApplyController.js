@@ -22,7 +22,11 @@ class JobApplyController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, view }) {}
+  async index({ request, response, view }) {
+    const allApplies = await JobApply.query().with("job").fetch();
+
+    return allApplies;
+  }
 
   /**
    * Render a form to be used for creating a new jobapply.
@@ -80,6 +84,14 @@ class JobApplyController {
     return foo;
   }
 
+  async appliesFromJob({ params, request, response }) {
+    const allApplies = await JobApply.query()
+      // .with("job")
+      .with("user")
+      .where("job_id", params.id)
+      .fetch();
+    return allApplies;
+  }
   /**
    * Render a form to update an existing jobapply.
    * GET jobapplies/:id/edit

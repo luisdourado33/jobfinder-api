@@ -42,6 +42,10 @@ class User extends Model {
   jobs() {
     return this.hasMany("App/Models/Job");
   }
+
+  applies() {
+    return this.hasMany("App/Models/JobApply");
+  }
 }
 
 module.exports = User;

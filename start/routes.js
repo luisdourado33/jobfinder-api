@@ -22,10 +22,14 @@ Route.get("/", () => {
 
 Route.post("/login", "UserController.login");
 Route.resource("/users", "UserController");
+Route.post("/upload/:user_id", "UserController.upload");
+Route.get("/download/:user_id", "UserController.download");
 Route.resource("/roles", "RoleController");
 Route.resource("/jobs", "JobController");
 Route.post("/jobs/userJobs", "JobController.getUserJobs");
 Route.resource("/jobs/jobApply", "JobApplyController");
+Route.resource("/jobsApplies", "JobApplyController");
+Route.get("/jobsApplies/filter/:id", "JobApplyController.appliesFromJob");
 Route.resource("/companies", "CompanyTypeController");
 
 // Rotas agrupadas no middleware de autenticação
